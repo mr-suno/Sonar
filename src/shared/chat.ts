@@ -2,7 +2,7 @@
 
 interface Chats {
     chat(data: {}): void,
-    handle(): void
+    handle(callback: (message: string) => void): void;
 }
 
 // Constants
@@ -36,17 +36,17 @@ const chats: Chats = {
 
     /* Listens & Returns Messages You Send */
 
-    handle: function() {
+    handle: function(callback: (message: string) => void) {
         if (chat_type === Enum.ChatVersion.LegacyChatService) {
             local_player.Chatted.Connect(function(message: string) {
-                return message;
+                return callback(message);
             })
         } else {
             text_chat.MessageReceived.Connect(function(message: TextChatMessage) {
                 const author = message.TextSource as unknown;
 
                 if (author === local_player.Name) {
-                    return message;
+                    return callback(message.Text);
                 }
             })
         }
