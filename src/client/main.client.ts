@@ -1,4 +1,4 @@
-import { chat } from "shared/chat";
+import chats from "shared/chat";
 import { load_url } from "shared/remixed";
 
 // Define library
@@ -10,8 +10,6 @@ interface Fluent {
 // Main function
 
 function main() {
-    const initial_time = tick();
-
     const fluent = load_url('https://github.com/mr-suno/Fluent/releases/latest/download/main.lua') as Fluent;
     
     const n_emoji = '\u{274C}  ';
@@ -33,7 +31,7 @@ function main() {
 
     char.SetAttribute('hasSonar', true); // Alternate Global Set
 
-    chat('Sonar Bot loaded, use .cmds to say commands. -> .c 4 Credits <|:D');
+    chats.chat('Sonar Bot loaded, use .cmds to say commands. -> .c 4 Credits <|:D');
 }
 
 if (!game.Loaded) { print('Game not loaded') } else { main() }
