@@ -1,5 +1,6 @@
 import chats from "shared/chat";
 import { load_url } from "shared/remixed";
+import { commands } from "shared/commands";
 
 // Define library
 
@@ -12,7 +13,7 @@ interface Fluent {
 function main() {
     const fluent = load_url('https://github.com/mr-suno/Fluent/releases/latest/download/main.lua') as Fluent;
     
-    const n_emoji = '\u{274C}  ';
+    // const n_emoji = '\u{274C}  ';
     const y_emoji = '\u{2705}  ';
 
     if (getgenv().Sonar === true) { (getgenv().CancelSonar as Function)() }
@@ -21,13 +22,14 @@ function main() {
         Title: y_emoji + 'Sonar Now Loading',
         Content: 'Sonar Bot will automatically load when this is finished.',
         Duration: 5
-    })
-
+    });
+    
     const players = game.GetService('Players');
 
     const local_player = players.LocalPlayer as Player;
-    const char = local_player.Character ?? local_player.CharacterAdded.Wait()[0];
-    const root_part = char.FindFirstChild('HumanoidRootPart') ?? char.WaitForChild('HumanoidRootPart', 15);
+    let char = local_player.Character ?? local_player.CharacterAdded.Wait()[0];
+
+    commands(); // Allows for User Commands
 
     char.SetAttribute('hasSonar', true); // Alternate Global Set
 
