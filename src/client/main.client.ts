@@ -1,3 +1,9 @@
+// Enabling Sonar
+
+getgenv().Sonar = true;
+
+// Declaring Imports
+
 import chats from "shared/chat";
 import { load_url } from "shared/remixed";
 import { commands } from "shared/commands";
@@ -16,7 +22,11 @@ function main() {
     // const n_emoji = '\u{274C}  ';
     const y_emoji = '\u{2705}  ';
 
-    if (getgenv().Sonar === true) { (getgenv().CancelSonar as Function)() }
+    if (getgenv().Sonar === true) {
+        if (getgenv().CancelSonar !== undefined) {
+            (getgenv().CancelSonar as Function)()
+        }
+    }
 
     fluent.Notify({
         Title: y_emoji + 'Sonar Now Loading',
@@ -33,14 +43,16 @@ function main() {
 
     char.SetAttribute('hasSonar', true); // Alternate Global Set
 
-    chats.chat('Sonar Bot loaded, use .cmds to say commands. -> .c 4 Credits <|:D');
+    chats.chat('🌙  Sonar Bot loaded, use .cmds to say commands. -> .c 4 Credits <|:D');
+
+    task.wait(0.25);
+
+    chats.chat('Made in TypeScript, with love by Suno :)');
 }
 
 if (!game.Loaded) { print('Game not loaded') } else { main() }
 
 // Defining Globals
-
-getgenv().Sonar = true;
 
 getgenv().CancelSonar = function() {
     const players = game.GetService('Players');
