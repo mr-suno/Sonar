@@ -11,6 +11,16 @@ const fs = require('fs');
 const path = require('path');
 const { minify } = require('luamin');
 
+function replaceShortOps(content) {
+    content = content.replace(/(\w+)\s*\+=\s*(\S+)/g, '$1 = $1 + $2');
+    
+    // content = content.replace(/(\w+)\s*-=\s*(\S+)/g, '$1 = $1 - $2');
+    // content = content.replace(/(\w+)\s*\*=\s*(\S+)/g, '$1 = $1 * $2');
+    // content = content.replace(/(\w+)\s*\/=\s*(\S+)/g, '$1 = $1 / $2');
+
+    return content;
+}
+
 function process(filePath) {
     if (filePath.includes(path.join(__dirname, 'out', 'shared'))) {
         return;
@@ -19,19 +29,21 @@ function process(filePath) {
     let content = fs.readFileSync(filePath, 'utf8');
     content = content.replace(/local TS = require\(game:GetService\("ReplicatedStorage"\):WaitForChild\("rbxts_include"\):WaitForChild\("RuntimeLib"\)\)\n?/, '');
 
+    content = replaceShortOps(content);
+
     const seenImports = new Set();
     const regex = /local\s+(\w+)\s*=\s*TS\.import\(script,\s*game:GetService\("ReplicatedStorage"\),\s*"TS",\s*"([^"]+)"\)(?:\.(\w+))?/g;
-
+    
     content = content.replace(regex, (match, varName, importPath, propName) => {
-        if (!seenImports.has(match) && !importPath.startsWith("shared/")) {
+        if (!seenImports.has(match) && !importPath.startsWith("shared/") && varName !== 'queue') {
             const replacement = findExport(importPath, propName, varName);
             seenImports.add(match);
-
+    
             return replacement || match;
         }
-
+    
         return match;
-    });
+    });     
 
     fs.writeFileSync(filePath, content);
 }
@@ -84,25 +96,46 @@ function processDir(dir) {
     }
 }
 
-const outDir = path.join(__dirname, 'out');
-const build = path.join(__dirname, 'output.lua');
-const source = path.join(outDir, 'client', 'main.client.luau');
-
-processDir(outDir);
-
 function cleanUpFinal(sourcePath) {
     let content = fs.readFileSync(sourcePath, 'utf8');
 
     content = content.replace(/local TS = require\(game:GetService\("ReplicatedStorage"\):WaitForChild\("rbxts_include"\):WaitForChild\("RuntimeLib"\)\)\n?/, '');
     content = content.replace(/local\s+\w+\s*=\s*TS\.import\(.*\)\s*(?:\.\w+)?\n?/g, '');
 
+    content = replaceShortOps(content);
+
     fs.writeFileSync(sourcePath, content);
 }
 
+function safeMinify(sourceContent) {
+    try {
+        return minify(sourceContent);
+    } catch (error) {
+        console.error(' - Minification failed:', error);
+        if (error instanceof SyntaxError) {
+            console.error(' ! Syntax error:', error.message);
+            console.error(`   At line ${error.line}, column ${error.column}`);
+            
+            const lines = sourceContent.split('\n');
+            const start = Math.max(0, error.line - 3);
+            const end = Math.min(lines.length, error.line + 2);
 
+            console.error('\nProblematic code:');
+
+            for (let i = start; i < end; i++) {
+                console.error(`${i + 1}: ${lines[i]}${i + 1 === error.line ? ' <-- Error here' : ''}`);
+            }
+        }
+        return null;
+    }
+}
+
+const outDir = path.join(__dirname, 'out');
+const build = path.join(__dirname, 'output.lua');
+const source = path.join(outDir, 'client', 'main.client.luau');
+
+processDir(outDir);
 cleanUpFinal(source);
-
-// Minify file contents
 
 const minifyMessage = `-- File minified using Luamin
 
@@ -124,23 +157,23 @@ const minifyMessage = `-- File minified using Luamin
 ]]
 
 -- Minified source-file below:
-`
+`;
 
 try {
     const sourceContent = fs.readFileSync(source, 'utf8');
     console.log('\nSource read successfully\n');
     
-    const minifiedContent = minify(sourceContent);
-    console.log(' - Finished minifying [1]');
-    
-    fs.writeFileSync(build, minifyMessage + '\n' + minifiedContent);
-    console.log(' - Written to output  [2]');
-} catch (error) {
-    console.error(' - Failed minify:', error);
-
-    if (error instanceof SyntaxError) {
-        console.error(' ! Syntax (skill) issue:', error.message);
+    const minifiedContent = safeMinify(sourceContent);
+    if (minifiedContent) {
+        console.log(' - Finished minifying [1]');
+        fs.writeFileSync(build, minifyMessage + '\n' + minifiedContent);
+        console.log(' - Written to output  [2]');
+    } else {
+        console.error(' - Minification failed, writing original content');
+        fs.writeFileSync(build, minifyMessage + '\n-- Minification failed, original content below:\n\n' + sourceContent);
     }
+} catch (error) {
+    console.error(' - Failed to read or write file:', error);
 }
 
 console.log('\nProcess finished <|:)\n');
