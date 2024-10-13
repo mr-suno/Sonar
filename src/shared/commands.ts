@@ -86,8 +86,50 @@ command('jump')(function() {
     (humanoid as Humanoid).Jump = true;
 });
 
+command('gravity', 'grav')(function(...args: string[]) {
+    const gravity: string = args.join(' ');
+    let grav_value = tonumber(gravity);
+
+    if (grav_value !== undefined && type(grav_value) === 'number') {
+        if (grav_value < 50) {
+            grav_value = 50;
+
+            chats.chat('🌙  Sonar → Changed local gravity to ' + tostring(grav_value) + ' (Reached limit)');
+        } else {
+            chats.chat('🌙  Sonar → Changed local gravity to ' + tostring(grav_value));
+        }
+        
+        game.Workspace.Gravity = grav_value;
+    }
+});
+
+command('hipheight', 'height', 'hh')(function(...args: string[]) {
+    const height: string = args.join(' ');
+    let hei_value = tonumber(height);
+
+    if (hei_value !== undefined && type(hei_value) === 'number') {
+        if (hei_value > 50) {
+            hei_value = 50;
+            
+            chats.chat('🌙  Sonar → Changed local gravity to ' + tostring(hei_value) + ' (Reached limit)');
+        } else if (hei_value < 2) {
+            hei_value = 2;
+
+            chats.chat('🌙  Sonar → Changed local gravity to ' + tostring(hei_value));
+        }
+
+        if (char === undefined) {
+            char = local_player.Character ?? local_player.CharacterAdded.Wait()[0];
+        }
+
+        const humanoid = char.FindFirstChild('Humanoid') ?? char.WaitForChild('Humanoid', 15) as Humanoid;
+
+        (humanoid as Humanoid).HipHeight = hei_value;
+    }
+});
+
 command('help', 'guide', 'cmds')(function() {
-    chats.chat('🌙  Sonar → .credits - .c - .dev || .help - .guide - .cmds || .reset - .re - .oof');
+    chats.chat('🌙  Sonar → .credits - .c - .dev || .help - .guide - .cmds || .reset - .re - .oof || Args: <number> → .hipheight - .height - .hh || Args: <number> → .grav - .gravity');
 
     task.wait(3.25);
 
@@ -101,9 +143,17 @@ export function commands() {
         if (client_stop === false) {
             if (message.sub(1, 1) === prefix) {
                 const lowered = message.sub(2).lower();
+                const parts = lowered.split(' ');
+
+                const cmd = parts[0];
+                const args: string[] = [];
+
+                for (let i  = 1; i < parts.size(); i++) {
+                    args.push(parts[i]);
+                }
     
-                if (reg[lowered]) {
-                    reg[lowered]();
+                if (reg[cmd]) {
+                    (reg[cmd] as (...args: string[]) => void)(...args);
                 } else {
                     warn('Command does not exist. Command tried: ' + lowered);
                 }
