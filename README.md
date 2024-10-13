@@ -6,6 +6,14 @@ Efficiency-based admin commands, made for practicality,
 > Download the **Lua** source file in the [Releases](https://github.com/mr-suno/Sonar/releases/latest) section of this repository,
 > <br>the file is `build.lua`
 
+```lua
+-- Load Sonar 🌙 for yourself, latest build
+
+loadstring(game:HttpGetAsync(
+  "https://github.com/mr-suno/Sonar/releases/latest/download/build.lua"
+))()
+```
+
 ---
 
 ### Developers ⚙️
