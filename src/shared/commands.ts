@@ -32,6 +32,8 @@ local_player.OnTeleport.Connect(function() {
             chats.chat('🌙  Sonar → Reloading Sonar Bot..');
         
             queue_on_teleport('loadstring(game:HttpGetAsync(\'https://github.com/mr-suno/Sonar/releases/latest/download/build.lua\'))()');
+        } else {
+            queue_on_teleport(''); // Clearing cache
         }
     }
 });
