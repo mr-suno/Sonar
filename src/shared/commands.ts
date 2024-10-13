@@ -58,8 +58,6 @@ command('reset', 're', 'oof')(function() {
 
         (root as BasePart).CFrame = old_pos;        
     });
-
-    chats.chat('🌙  Sonar → Done! I will come back when I respawn.');
 });
 
 command('credits', 'c', 'dev')(function() {
@@ -83,7 +81,7 @@ command('help', 'guide', 'cmds')(function() {
 
     task.wait(3.25);
 
-    chats.chat('Whitelisted Only: .ul / .unload / .stop');
+    chats.chat('⚙️  Owner Only → .ul / .unload / .stop');
 });
 
 // Read Messages
