@@ -20,24 +20,6 @@ let client_stop = false;
 
 const fluent = load_url('https://github.com/mr-suno/Fluent/releases/latest/download/main.lua') as Fluent;
 
-// Add Pre-Command Handling
-
-local_player.OnTeleport.Connect(function() {
-    if (client_stop === false) {
-        if (char === undefined) {
-            char = local_player.Character ?? local_player.CharacterAdded.Wait()[0];
-        }
-    
-        if (char.GetAttribute('reloadSonar')) {
-            chats.chat('🌙  Sonar → Reloading Sonar Bot..');
-        
-            queue_on_teleport('loadstring(game:HttpGetAsync(\'https://github.com/mr-suno/Sonar/releases/latest/download/build.lua\'))()');
-        } else {
-            queue_on_teleport(''); // Clearing cache
-        }
-    }
-});
-
 // Registry
 
 const reg: { [key: string]: () => void } = {};
@@ -84,16 +66,6 @@ command('credits', 'c', 'dev')(function() {
     chats.chat('🌙  Sonar → Sonar Bot made in TypeScript by Suno! (mr-suno on Git Hub)');
 });
 
-command('rj', 'rejoin')(function() {
-    if (char === undefined) {
-        char = local_player.Character ?? local_player.CharacterAdded.Wait()[0];
-    }
-
-    char.SetAttribute('reloadSonar', true);
-
-    teleport.TeleportToPlaceInstance(game.PlaceId, game.JobId, local_player);
-});
-
 command('ul', 'unload','stop')(function() {
     getgenv().Sonar = false;
     
@@ -107,7 +79,11 @@ command('ul', 'unload','stop')(function() {
 });
 
 command('help', 'guide', 'cmds')(function() {
-    chats.chat('🌙  Sonar → .credits / .c / .dev, .help / .guide / .cmds, .reset / .re / .oof, .rj / .rejoin, .ul / .unload / .stop');
+    chats.chat('🌙  Sonar → .credits / .c / .dev, .help / .guide / .cmds, .reset / .re / .oof');
+
+    task.wait(3.25);
+
+    chats.chat('Whitelisted Only: .ul / .unload / .stop');
 });
 
 // Read Messages
