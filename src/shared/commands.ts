@@ -10,6 +10,20 @@ let char = local_player.Character ?? local_player.CharacterAdded.Wait()[0];
 
 let prefix = '.'
 
+// Add Pre-Command Handling
+
+local_player.OnTeleport.Connect(function() {
+    if (char === undefined) {
+        char = local_player.Character ?? local_player.CharacterAdded.Wait()[0];
+    }
+
+    if (char.GetAttribute('reloadSonar')) {
+        chats.chat('🌙  Sonar → Reloading Sonar Bot..');
+    
+        queue_on_teleport('loadstring(game:HttpGetAsync(\'https://github.com/mr-suno/Sonar/releases/latest/download/build.lua\'))()');
+    }
+});
+
 // Registry
 
 const reg: { [key: string]: () => void } = {};
@@ -29,7 +43,7 @@ function command(value: string, ...aliases: string[]) {
 // Create Commands
 
 command('reset', 're', 'oof')(function() {
-    if (char !== undefined) {
+    if (char === undefined) {
         char = local_player.Character ?? local_player.CharacterAdded.Wait()[0];
     }
 
@@ -49,27 +63,25 @@ command('reset', 're', 'oof')(function() {
         (root as BasePart).CFrame = old_pos;        
     });
 
-    chats.chat('🌙  Sonar -> Done! I will come back when I respawn.');
+    chats.chat('🌙  Sonar → Done! I will come back when I respawn.');
 });
 
 command('credits', 'c', 'dev')(function() {
-    chats.chat('🌙  Sonar -> Sonar Bot made with love, in TypeScript by Suno! Version: 1.0.b');
+    chats.chat('🌙  Sonar → Sonar Bot made with love, in TypeScript by Suno! Version: 1.0.b');
 });
 
 command('rj', 'rejoin')(function() {
-    chats.chat('🌙  Sonar -> Rejoining server.. (Reloading Bot if Possible)');
-
-    task.wait(0.25);
-
-    if (queue_on_teleport !== undefined) {
-        queue_on_teleport('loadstring(game:HttpGetAsync(\'https://github.com/mr-suno/Sonar/releases/latest/download/build.lua\'))()');
+    if (char === undefined) {
+        char = local_player.Character ?? local_player.CharacterAdded.Wait()[0];
     }
+
+    char.SetAttribute('reloadSonar', true);
 
     teleport.TeleportToPlaceInstance(game.PlaceId, game.JobId, local_player);
 });
 
 command('help', 'guide', 'cmds')(function() {
-    chats.chat('🌙  Sonar -> .credits / .c / .dev, .help / .guide / .cmds, .reset / .re / .oof, .rj / .rejoin');
+    chats.chat('🌙  Sonar → .credits / .c / .dev, .help / .guide / .cmds, .reset / .re / .oof, .rj / .rejoin');
 });
 
 // Read Messages
