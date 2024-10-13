@@ -1,4 +1,11 @@
 import chats from "shared/chat";
+import { load_url } from "./remixed";
+
+// Define library
+
+interface Fluent {
+    Notify(data: {}): void
+}
 
 // Constants
 
@@ -9,18 +16,23 @@ const local_player = players.LocalPlayer as Player;
 let char = local_player.Character ?? local_player.CharacterAdded.Wait()[0];
 
 let prefix = '.'
+let client_stop = false;
+
+const fluent = load_url('https://github.com/mr-suno/Fluent/releases/latest/download/main.lua') as Fluent;
 
 // Add Pre-Command Handling
 
 local_player.OnTeleport.Connect(function() {
-    if (char === undefined) {
-        char = local_player.Character ?? local_player.CharacterAdded.Wait()[0];
-    }
-
-    if (char.GetAttribute('reloadSonar')) {
-        chats.chat('🌙  Sonar → Reloading Sonar Bot..');
+    if (client_stop === false) {
+        if (char === undefined) {
+            char = local_player.Character ?? local_player.CharacterAdded.Wait()[0];
+        }
     
-        queue_on_teleport('loadstring(game:HttpGetAsync(\'https://github.com/mr-suno/Sonar/releases/latest/download/build.lua\'))()');
+        if (char.GetAttribute('reloadSonar')) {
+            chats.chat('🌙  Sonar → Reloading Sonar Bot..');
+        
+            queue_on_teleport('loadstring(game:HttpGetAsync(\'https://github.com/mr-suno/Sonar/releases/latest/download/build.lua\'))()');
+        }
     }
 });
 
@@ -80,21 +92,35 @@ command('rj', 'rejoin')(function() {
     teleport.TeleportToPlaceInstance(game.PlaceId, game.JobId, local_player);
 });
 
+command('ul', 'unload','stop')(function() {
+    getgenv().Sonar = false;
+    
+    client_stop = true; // Stop commands from being ran
+
+    fluent.Notify({
+        Title: '🌙  Sonar Closed',
+        Content: 'Commands will no longer be responsive, reload the script to keep using commands.',
+        Duration: 5
+    })
+});
+
 command('help', 'guide', 'cmds')(function() {
-    chats.chat('🌙  Sonar → .credits / .c / .dev, .help / .guide / .cmds, .reset / .re / .oof, .rj / .rejoin');
+    chats.chat('🌙  Sonar → .credits / .c / .dev, .help / .guide / .cmds, .reset / .re / .oof, .rj / .rejoin, .ul / .unload / .stop');
 });
 
 // Read Messages
 
 export function commands() {
     chats.handle(function(message: string) {
-        if (message.sub(1, 1) === prefix) {
-            const lowered = message.sub(2).lower();
-
-            if (reg[lowered]) {
-                reg[lowered]();
-            } else {
-                warn('Command does not exist. Command tried: ' + lowered);
+        if (client_stop === false) {
+            if (message.sub(1, 1) === prefix) {
+                const lowered = message.sub(2).lower();
+    
+                if (reg[lowered]) {
+                    reg[lowered]();
+                } else {
+                    warn('Command does not exist. Command tried: ' + lowered);
+                }
             }
         }
     });
