@@ -64,17 +64,17 @@ command('credits', 'c', 'dev')(function() {
     chats.chat('🌙  Sonar → Sonar Bot made in TypeScript by Suno! (mr-suno on Git Hub)');
 });
 
-command('ul', 'unload','stop')(function() {
-    getgenv().Sonar = false;
+// command('ul', 'unload','stop')(function() {
+//     getgenv().Sonar = false;
     
-    client_stop = true; // Stop commands from being ran
+//     client_stop = true; // Stop commands from being ran
 
-    fluent.Notify({
-        Title: '🌙  Sonar Closed',
-        Content: 'Commands will no longer be responsive, reload the script to keep using commands.',
-        Duration: 5
-    })
-});
+//     fluent.Notify({
+//         Title: '🌙  Sonar Closed',
+//         Content: 'Commands will no longer be responsive, reload the script to keep using commands.',
+//         Duration: 5
+//     })
+// });
 
 command('jump')(function() {
     if (char === undefined) {
@@ -131,9 +131,9 @@ command('hipheight', 'height', 'hh')(function(...args: string[]) {
 command('help', 'guide', 'cmds')(function() {
     chats.chat('🌙  Sonar → .credits - .c - .dev || .help - .guide - .cmds || .reset - .re - .oof || Args: <number> → .hipheight - .height - .hh || Args: <number> → .grav - .gravity');
 
-    task.wait(3.25);
+    // task.wait(3.25);
 
-    chats.chat('⚙️  Owner Only → .ul - .unload - .stop');
+    // chats.chat('⚙️  Owner Only → .ul - .unload - .stop');
 });
 
 // Read Messages
