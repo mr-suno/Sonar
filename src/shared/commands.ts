@@ -62,7 +62,7 @@ command('rj', 'rejoin')(function() {
     task.wait(0.25);
 
     if (queue_on_teleport !== undefined) {
-        queue_on_teleport('loadstring(game:HttpGetAsync(\'https://github.com/mr-suno/Sonar/releases/main.lua\'))()');
+        queue_on_teleport('loadstring(game:HttpGetAsync(\'https://github.com/mr-suno/Sonar/releases/latest/download/build.lua\'))()');
     }
 
     teleport.TeleportToPlaceInstance(game.PlaceId, game.JobId, local_player);
