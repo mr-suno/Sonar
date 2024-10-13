@@ -111,11 +111,9 @@ command('hipheight', 'height', 'hh')(function(...args: string[]) {
         if (hei_value > 50) {
             hei_value = 50;
             
-            chats.chat('🌙  Sonar → Changed local gravity to ' + tostring(hei_value) + ' (Reached limit)');
-        } else if (hei_value < 2) {
-            hei_value = 2;
-
-            chats.chat('🌙  Sonar → Changed local gravity to ' + tostring(hei_value));
+            chats.chat('🌙  Sonar → Changed hipheight to ' + tostring(hei_value) + ' (Reached limit)');
+        } else {
+            chats.chat('🌙  Sonar → Changed hipheight to ' + tostring(hei_value));
         }
 
         if (char === undefined) {
