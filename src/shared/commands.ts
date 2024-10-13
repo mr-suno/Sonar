@@ -27,11 +27,11 @@ const reg: { [key: string]: () => void } = {};
 // Functions
 
 function command(value: string, ...aliases: string[]) {
-    return function(callback: () => void) {
+    return function(callback: (...args: string[]) => void) {
         reg[value] = callback;
 
         for (const alias of aliases) {
-            reg[alias] = reg[value];
+            reg[alias] = callback;
         }
     }
 }
@@ -76,12 +76,22 @@ command('ul', 'unload','stop')(function() {
     })
 });
 
+command('jump')(function() {
+    if (char === undefined) {
+        char = local_player.Character ?? local_player.CharacterAdded.Wait()[0];
+    }
+
+    const humanoid = char.FindFirstChild('Humanoid') ?? char.WaitForChild('Humanoid', 15) as Humanoid;
+
+    (humanoid as Humanoid).Jump = true;
+});
+
 command('help', 'guide', 'cmds')(function() {
-    chats.chat('🌙  Sonar → .credits / .c / .dev, .help / .guide / .cmds, .reset / .re / .oof');
+    chats.chat('🌙  Sonar → .credits - .c - .dev || .help - .guide - .cmds || .reset - .re - .oof');
 
     task.wait(3.25);
 
-    chats.chat('⚙️  Owner Only → .ul / .unload / .stop');
+    chats.chat('⚙️  Owner Only → .ul - .unload - .stop');
 });
 
 // Read Messages
