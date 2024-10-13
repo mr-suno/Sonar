@@ -67,7 +67,7 @@ command('reset', 're', 'oof')(function() {
 });
 
 command('credits', 'c', 'dev')(function() {
-    chats.chat('🌙  Sonar → Sonar Bot made with love, in TypeScript by Suno! Version: 1.0.b');
+    chats.chat('🌙  Sonar → Sonar Bot made in TypeScript by Suno! (mr-suno on Git Hub)');
 });
 
 command('rj', 'rejoin')(function() {
