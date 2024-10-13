@@ -25,8 +25,8 @@ const chats: Chats = {
 
             event.FireServer(message, 'All');
         } else {
-            const text_channel = text_chat.FindFirstChild('TextChannels');
-            const main = text_channel?.FindFirstChild('RBXGeneral');
+            const text_channel = text_chat.FindFirstChild('TextChannels') as TextChannel;
+            const main = text_channel.FindFirstChild('RBXGeneral');
 
             if (main) {
                 (main as TextChannel).SendAsync(message);
@@ -38,17 +38,15 @@ const chats: Chats = {
 
     handle: function(callback: (message: string) => void) {
         if (chat_type === Enum.ChatVersion.LegacyChatService) {
-            local_player.Chatted.Connect(function(message: string) {
-                return callback(message);
-            })
+            players.PlayerAdded.Connect((player) => {
+                player.Chatted.Connect((message: string) => {
+                    return callback(message);
+                });
+            });
         } else {
             text_chat.MessageReceived.Connect(function(message: TextChatMessage) {
-                const author = message.TextSource as unknown;
-
-                if (author === local_player.Name) {
-                    return callback(message.Text);
-                }
-            })
+                return callback(message.Text);
+            });
         }
     }
 }
